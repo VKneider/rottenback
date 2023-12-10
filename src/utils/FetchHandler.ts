@@ -5,18 +5,19 @@ class FetchHandler {
     private apiUrl: string;
 
     constructor() {
-        this.apiKey = process.env.API_KEY as string;
+        this.apiKey = "44d736ca0edc73cd6b2ceae78c98552c";
         this.apiUrl = `https://api.themoviedb.org/3`;
     }
 
     async request(method: string, endpoint: string, body?: any, query?: string) {
-        const url = `${this.apiUrl}${endpoint}?api_key=${this.apiKey}${query ? `&${query}` : ''}`;
+        let url = `${this.apiUrl}${endpoint}?api_key=${this.apiKey}${query ? `&${query}` : ''}`;
         const options: any = {
             method,
             headers: {
                 'Content-Type': 'application/json'
             }
         };
+       
 
         if (body) {
             options.body = JSON.stringify(body);
@@ -33,7 +34,7 @@ class FetchHandler {
             // Parsea la respuesta en formato JSON
             const data = await response.json();
 
-            return {data , success: true}
+            return {fetchData:data , success: true}
             
         } catch (error:any) {
             return {error:error.message, success:false}

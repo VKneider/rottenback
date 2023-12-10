@@ -7,7 +7,7 @@ import passportMiddleware from './middlewares/passport.js';
 
 import userRouter from './routes/user.routes.js';
 import authRouter from './routes/auth.routes.js';
-
+import movieRouter from './routes/movie.routes..js';
 
 const app = express();
 
@@ -22,5 +22,6 @@ passport.use(passportMiddleware)
 
 app.use('/auth', authRouter)
 app.use('/user', userRouter)
+app.use('/movie', movieRouter)
 
 export default app;

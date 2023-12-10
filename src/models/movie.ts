@@ -3,17 +3,16 @@ import { model, Schema, Document } from "mongoose";
 import "dotenv/config"
 
 export interface IMovie extends Document {
-  
 title : string;
 description : string;
 duration : number;
 releaseDate : Date;
-actors : string[];
-directors : string[];
-writers : string[];
 genres : string[];
 posterUrl : string;
 trailerUrl : string;
+movieId : number;
+isAdult : boolean;
+
 }
 
 const movieSchema = new Schema<IMovie>({
@@ -21,32 +20,24 @@ const movieSchema = new Schema<IMovie>({
     type : String,
     required : true,
     },
+    movieId : {
+    type : Number,
+    required : true,
+    },
     description : {
     type : String,
-    required : true,
+    required : false,
     },
     duration : {
     type : Number,
-    required : true,
+    required : false,
     },
     releaseDate : {
     type : Date,
     required : true,
     },
-    actors : {
-    type : [String],
-    required : true,
-    },
-    directors : {
-    type : [String],
-    required : true,
-    },
-    writers : {
-    type : [String],
-    required : true,
-    },
     genres : {
-    type : [String],
+    type : [Number],
     required : true,
     },
     posterUrl : {
@@ -57,8 +48,13 @@ const movieSchema = new Schema<IMovie>({
     type : String,
     required : true,
     },
+    isAdult : {
+    type : Boolean,
+    required : true,
+    }
 });
 
 const movieCollection = model<IMovie>("Movie", movieSchema);
 
 export default movieCollection;
+
