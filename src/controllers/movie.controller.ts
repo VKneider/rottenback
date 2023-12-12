@@ -109,7 +109,7 @@ interface similar{
 interface MovieApi {
     adult?: boolean;
     backdrop_path?: string;
-    belongs_to_collection?: null | { /* Propiedades de belongs_to_collection si es necesario */ };
+    belongs_to_collection?: null | { };
     budget?: number;
     genres: {
       id: number;
