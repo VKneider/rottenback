@@ -1,29 +1,32 @@
 import { model, Schema, Document } from "mongoose";
 
-import "dotenv/config"
-
 export interface IMessage extends Document {
-    chatId : string;
-    senderId : string;
-    sentAt : Date; 
+    chatId: string;
+    senderId: string;
+    sentAt: Date;
+    content : string;
 }
 
 const messageSchema = new Schema<IMessage>({
-    chatId : {
-    type : String,
-    required : true,
+    chatId: {
+        type: String,
+        required: true,
     },
-    senderId : {
-    type : String,
-    required : true,
+    senderId: {
+        type: String,
+        required: true,
     },
-    sentAt : {
-    type : Date,
-    required : true,
+    sentAt: {
+        type: Date,
+        required: true,
+    },
+    content : {
+        type : String,
+        required : true,
     }
+    
 });
 
-const messageCollection = model<IMessage>("Message", messageSchema);
+const MessageCollection = model<IMessage>("Message", messageSchema);
 
-export default messageCollection;
-
+export default MessageCollection;
