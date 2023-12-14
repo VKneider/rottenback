@@ -7,6 +7,6 @@ let MediaRouter = Router();
 
 MediaRouter.get("/search/:query", MediaController.searchMedia);
 MediaRouter.get("/discover", MediaController.discoverMedias);
-MediaRouter.get("/data/:MediaId", MediaController.getMedia);
+MediaRouter.get("/data/:mediaId", MediaController.getMedia);
 
 export default MediaRouter;
