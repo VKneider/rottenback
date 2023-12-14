@@ -2,7 +2,7 @@ import { model, Schema, Document } from "mongoose";
 
 import "dotenv/config"
 
-export interface IMovie extends Document {
+export interface IMedia extends Document {
 title : string;
 description : string;
 duration : number;
@@ -10,17 +10,17 @@ releaseDate : Date;
 genres : string[];
 posterUrl : string;
 trailerUrl : string;
-movieId : number;
+MediaId : number;
 isAdult : boolean;
 
 }
 
-const movieSchema = new Schema<IMovie>({
+const MediaSchema = new Schema<IMedia>({
     title : {
     type : String,
     required : true,
     },
-    movieId : {
+    MediaId : {
     type : Number,
     required : true,
     },
@@ -54,7 +54,7 @@ const movieSchema = new Schema<IMovie>({
     }
 });
 
-const movieCollection = model<IMovie>("Movie", movieSchema);
+const MediaCollection = model<IMedia>("Media", MediaSchema);
 
-export default movieCollection;
+export default MediaCollection;
 
