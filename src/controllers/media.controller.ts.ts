@@ -14,9 +14,9 @@ export default class MediaController {
         const {mediaType} = req.query as any;
         let endpoint;
         if(mediaType === "movie"){
-            endpoint=`"/search/Movie"`}
+            endpoint=`"/search/movie"`}
         else{
-            endpoint=`"/search/Tv"`
+            endpoint=`"/search/tv"`
         }
 
         const request = await fetchHandler.request("GET", endpoint, undefined, `query=${query}&page=${page}`);
@@ -36,7 +36,7 @@ export default class MediaController {
 
         let endpoint;
         if(mediaType === "movie"){
-            endpoint=`/Media/${mediaId}`}
+            endpoint=`/movie/${mediaId}`}
         else{
             endpoint=`/tv/${mediaId}`
         }
@@ -117,9 +117,9 @@ export default class MediaController {
         const {mediaType} = req.query as any;
         let endpoint;
         if(mediaType === "movie"){
-            endpoint=`/discover/Movie`}
+            endpoint=`/discover/movie`}
         else{
-            endpoint=`/discover/Tv`
+            endpoint=`/discover/tv`
         }
 
         const request = await fetchHandler.request("GET", endpoint, undefined, `page=${page}&sort_by=popularity.${popularity}&with_genres=${genres}`);
