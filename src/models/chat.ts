@@ -1,8 +1,9 @@
-import { model, Schema, Document } from "mongoose";
+import { model, Schema, Document, Types } from "mongoose";
+
 
 export interface IChat extends Document {
     isGroup: null | string;
-    members: string[];
+    members: Types.ObjectId[];
 }
 
 const chatSchema = new Schema<IChat>({
@@ -12,7 +13,8 @@ const chatSchema = new Schema<IChat>({
         default: null,
     },
     members: {
-        type: [String],
+        type: [Schema.Types.ObjectId],
+        ref: "User",
         required: false,
         default: [],
     },

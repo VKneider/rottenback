@@ -10,6 +10,7 @@ export default class chatController {
     openChat = async (req: any, res: any) => {
         const { isGroup, members, chatId } = req.body;
 
+        
         const chatFlag = await ChatCollection.findOne({ members: { $all: members } });
 
         if (!chatFlag) {
@@ -18,11 +19,12 @@ export default class chatController {
             if (!newChat) {
                 return ApiResponse.error(res, "Error creating chat", 400);
             }
+            
             return ApiResponse.success(res, "Chat created", {
                 chat: newChat,
                 messages: [],
-            
             });
+
         }
 
         const messages = await MessageCollection.find({ chatId: chatFlag._id }).sort({ createdAt: -1 });
