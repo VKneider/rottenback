@@ -11,7 +11,15 @@ export default class MediaController {
 
         if (!page){page= 1}
 
-        const request = await fetchHandler.request("GET", "/search/Media", undefined, `query=${query}&page=${page}`);
+        const {mediaType} = req.query as any;
+        let endpoint;
+        if(mediaType === "movie"){
+            endpoint=`"/search/Movie"`}
+        else{
+            endpoint=`"/search/Tv"`
+        }
+
+        const request = await fetchHandler.request("GET", endpoint, undefined, `query=${query}&page=${page}`);
 
         if (!request.success) {
             return ApiResponse.error(res, "Error searching Media", 500);
@@ -24,9 +32,17 @@ export default class MediaController {
     static getMedia = async (req: Request, res: Response) => {
         const { mediaId } = req.params;
         const Media = await MediaCollection.findOne({ mediaId });
+        const {mediaType} = req.query as any;
+
+        let endpoint;
+        if(mediaType === "movie"){
+            endpoint=`/Media/${mediaId}`}
+        else{
+            endpoint=`/tv/${mediaId}`
+        }
 
         if (!Media) {
-            const request = await fetchHandler.request("GET", `/Media/${mediaId}`, undefined, `append_to_response=videos,images,similar`);
+            const request = await fetchHandler.request("GET", endpoint, undefined, `append_to_response=videos,images,similar`);
 
             if (!request.success) {
                 return ApiResponse.error(res, "Error searching Media", 500);
@@ -71,8 +87,18 @@ export default class MediaController {
 
 
     static getSimilarMedias = async (req: Request, res: Response) => {
-        const { MediaId } = req.params;
-        const request = await fetchHandler.request("GET", `/Media/${MediaId}/similar`);
+        const { mediaId } = req.params;
+
+        const {mediaType} = req.query as any;
+        let endpoint;
+
+        if(mediaType === "movie"){
+            endpoint=`/movie/${mediaId}/similar`}
+        else{
+            endpoint=`/tv/${mediaId}/similar`
+        }
+
+        const request = await fetchHandler.request("GET", endpoint);
 
         if (!request.success) {
             return ApiResponse.error(res, "Error searching Media", 500);
@@ -88,7 +114,15 @@ export default class MediaController {
         if (!popularity){popularity= "desc"}
         if (!genres){genres= ""}
 
-        const request = await fetchHandler.request("GET", `/discover/Media`, undefined, `page=${page}&sort_by=popularity.${popularity}&with_genres=${genres}`);
+        const {mediaType} = req.query as any;
+        let endpoint;
+        if(mediaType === "movie"){
+            endpoint=`/discover/Movie`}
+        else{
+            endpoint=`/discover/Tv`
+        }
+
+        const request = await fetchHandler.request("GET", endpoint, undefined, `page=${page}&sort_by=popularity.${popularity}&with_genres=${genres}`);
 
         if (!request.success) {
             return ApiResponse.error(res, "Error searching Media", 500);
