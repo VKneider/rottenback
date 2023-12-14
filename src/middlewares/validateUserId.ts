@@ -33,8 +33,11 @@ export default function validateUserIdToken(req:any, res: Response, next: NextFu
 
     } else {
         
-        const {idUserToken, userId} = req.body;
+
+        const { userId} = req.body;
         
+        let idUserToken = req.user.id as any;
+
         if (!areValuesEqual(userId, idUserToken)) {
             return ApiResponse.unauthorized(res, "Unauthorized access");
         }else{
