@@ -11,6 +11,7 @@ class FetchHandler {
 
     async request(method: string, endpoint: string, body?: any, query?: string) {
         let url = `${this.apiUrl}${endpoint}?api_key=${this.apiKey}${query ? `&${query}` : ''}`;
+        console.log(url)
         const options: any = {
             method,
             headers: {

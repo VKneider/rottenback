@@ -51,8 +51,16 @@ export default class MediaController {
             let MediaData = request.fetchData as MediaApi;
             const genres =MediaData.genres.map((genre: any) => genre.id);
             
+            let title ;
+            if(mediaType === "movie"){
+                title = MediaData.title}
+            else{
+                title = MediaData.original_name;
+            }
+
+
             const newMedia = new MediaCollection({
-                title: MediaData.title,
+                title: title,
                 MediaId: MediaData.id,
                 description: MediaData.overview,
                 duration: MediaData.runtime,
@@ -122,12 +130,17 @@ export default class MediaController {
             endpoint=`/discover/tv`
         }
 
-        const request = await fetchHandler.request("GET", endpoint, undefined, `page=${page}&sort_by=popularity.${popularity}&with_genres=${genres}`);
+        let request = await fetchHandler.request("GET", endpoint, undefined, `page=${page}&sort_by=popularity.${popularity}&with_genres=${genres}`);
 
         if (!request.success) {
             return ApiResponse.error(res, "Error searching Media", 500);
         }
 
+        let requestData = request.fetchData as MediaApi[];
+        requestData = requestData.map((media: MediaApi) => {
+            media.poster_path = `https://image.tmdb.org/t/p/w500${media.poster_path}`;
+            return media;
+        })
 
         return ApiResponse.success(res, "Medias found", request);
     }
@@ -188,6 +201,7 @@ interface MediaApi {
         results: any[];
         page: number;
     };
+    original_name?: string;
     }
   
 
