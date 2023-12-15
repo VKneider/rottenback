@@ -144,7 +144,7 @@ export default class MediaController {
 
         request.fetchData = requestData;
 
-        return ApiResponse.success(res, "Medias found", reques);
+        return ApiResponse.success(res, "Medias found", request);
     }
 
 
