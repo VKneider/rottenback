@@ -135,15 +135,7 @@ export default class MediaController {
         if (!request.success) {
             return ApiResponse.error(res, "Error searching Media", 500);
         }
-
-        let requestData = request.fetchData as MediaApi[];
-        requestData = requestData.map((media: MediaApi) => {
-            media.poster_path = `https://image.tmdb.org/t/p/w500${media.poster_path}`;
-            return media;
-        })
-
-        request.fetchData = requestData;
-
+        
         return ApiResponse.success(res, "Medias found", request);
     }
 
