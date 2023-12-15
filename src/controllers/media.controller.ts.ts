@@ -142,7 +142,7 @@ export default class MediaController {
             return media;
         })
 
-        return ApiResponse.success(res, "Medias found", request);
+        return ApiResponse.success(res, "Medias found", requestData);
     }
 
 
