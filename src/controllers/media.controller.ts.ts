@@ -65,6 +65,15 @@ export default class MediaController {
                 release = MediaData.first_air_date;
             }
 
+            let trailerUrl = MediaData.videos?.results.find((video: any) => video.type === "Trailer" && video.site === "YouTube")?.key;
+            
+            if (!trailerUrl) {
+                trailerUrl = MediaData.videos?.results.find((video: any) => video.site === "YouTube")?.key;
+            }
+            
+
+            trailerUrl = `https://www.youtube.com/watch?v=${trailerUrl}`
+
             const newMedia = new MediaCollection({
                 title: title,
                 MediaId: MediaData.id,
@@ -73,7 +82,7 @@ export default class MediaController {
                 releaseDate: release,
                 genres: genres,
                 posterUrl: MediaData.poster_path,
-                trailerUrl: MediaData.poster_path,
+                trailerUrl: trailerUrl,
                 isAdult: MediaData.adult,
            });
 
