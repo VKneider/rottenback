@@ -1,7 +1,9 @@
 import app from "./app.js";
 import mongoose, { mongo } from "mongoose";
 import { Server } from "socket.io";
-import chatEvents from "./utils/socketEvents.js";
+import MessageController from "./controllers/message.controller.js";
+import { createServer } from "http";
+
 
 const connectDB = async () => {
     try {
@@ -17,18 +19,36 @@ connectDB().then(() => {
     console.log("Mongodb connected");
 });
 
-let server = app.listen(app.get("port"));
-let io = new Server(server, {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
-    }
+const httpServer = createServer(app);
+
+let io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+  transports: ["websocket", "polling"],
 });
 
-io.on("connection", socket => {
-    console.log("Usuario conectado:", socket.id);
 
+io.on("connection", (socket:any) => {
+    
+    socket.on("joinRoom", (data:any) => {
+        socket.join(data.chatId);
+        //send a message to the user who joined the room
+        socket.emit("receiveMessage", {message:"You joined the room"}); 
+    });
+
+    socket.on("sendMessage", async (data:any) => {
+        await MessageController.sendMessage(data, null);
+        io.to(data.chatId).emit("newMessage", data);
+    });
+
+    // Evento para desconexión
+    socket.on("disconnect", () => {
+        console.log("Usuario desconectado:", socket.id);
+    });
 });
 
-chatEvents(io);
+
+
 
