@@ -31,7 +31,7 @@ export default class MediaController {
 
     static getMedia = async (req: Request, res: Response) => {
         const { mediaId } = req.params;
-        const Media = await MediaCollection.findOne({ mediaId });
+        const Media = await MediaCollection.findOne({ MediaId:mediaId });
         const {mediaType} = req.query as any;
 
         let endpoint;
@@ -40,6 +40,7 @@ export default class MediaController {
         else{
             endpoint=`/tv/${mediaId}`
         }
+
 
         if (!Media) {
             const request = await fetchHandler.request("GET", endpoint, undefined, `append_to_response=videos,images,similar`);
