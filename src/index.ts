@@ -2,6 +2,7 @@ import app from "./app.js";
 import mongoose, { mongo } from "mongoose";
 import { Server } from "socket.io";
 import MessageController from "./controllers/message.controller.js";
+import userCollection from "./models/user.js";
 
 const connectDB = async () => {
     try {
@@ -37,7 +38,9 @@ io.on("connection", (socket:any) => {
     socket.on("sendMessage", async (data:any) => {
         console.log("me llega esto del mensaje", data);
         await MessageController.sendMessage(data, null);
-        socket.broadcast.to(data.chatId).emit("receiveMessage", data);
+        const user = await userCollection.findById(data.senderId);
+        data.sender = user;
+        socket.broadcast.emit(data.chatId).emit("receiveMessage", data);
 
     });
 
