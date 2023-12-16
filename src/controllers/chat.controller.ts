@@ -10,7 +10,7 @@ export default class chatController {
     static openChat = async (req: any, res: any) => {
         let { isGroup, members, chatId, description } = req.body;
 
-        
+
 
         let chatFlag;
 
@@ -36,7 +36,7 @@ export default class chatController {
 
         }
 
-        const messages = await MessageCollection.find({ chatId: chatFlag._id }).sort({ createdAt: -1 });
+        const messages = await MessageCollection.find({ chatId: chatFlag._id }).sort({ createdAt: -1 }).populate("senderId");
 
         if (!messages) {
             return ApiResponse.success(res, "Chat found with no messages", {
