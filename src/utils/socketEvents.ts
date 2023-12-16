@@ -1,12 +1,13 @@
-import MessageController from "../controllers/message.controller";
+import MessageController from "../controllers/message.controller.js";
 
 export default function chatEvents(io: any){
 
     io.on("connection", (socket:any) => {
     
         socket.on("joinRoom", (data:any) => {
-            socket.join(data.roomId);
-            console.log(`Usuario ${socket.id} se unió a la sala ${data.roomId}`);    
+            socket.join(data.chatId);
+            //send a message to the user who joined the room
+            socket.emit("receiveMessage", {message:"You joined the room"}); 
         });
     
         socket.on("sendMessage", async (data:any) => {

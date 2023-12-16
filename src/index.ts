@@ -1,6 +1,7 @@
 import app from "./app.js";
 import mongoose, { mongo } from "mongoose";
 import { Server } from "socket.io";
+import chatEvents from "./utils/socketEvents.js";
 
 const connectDB = async () => {
     try {
@@ -29,7 +30,5 @@ io.on("connection", socket => {
 
 });
 
+chatEvents(io);
 
-
-const movieRooms = new Map();
-const tvRooms = new Map();
