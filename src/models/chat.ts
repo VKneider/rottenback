@@ -3,7 +3,7 @@ import { model, Schema, Document, Types } from "mongoose";
 
 export interface IChat extends Document {
     isGroup: null | string;
-    members: Types.ObjectId[];
+    members: string[]
     description?: string;
 }
 
@@ -14,7 +14,7 @@ const chatSchema = new Schema<IChat>({
         default: null,
     },
     members: {
-        type: [Schema.Types.ObjectId],
+        type: [String],
         ref: "User",
         required: false,
         default: [],
