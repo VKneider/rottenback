@@ -36,7 +36,8 @@ io.on("connection", (socket:any) => {
 
     socket.on("sendMessage", async (data:any) => {
         await MessageController.sendMessage(data, null);
-        io.to(data.chatId).emit("newMessage", data);
+        socket.broadcast.to(data.chatId).emit("receiveMessage", data);
+
     });
 
     // Evento para desconexión

@@ -14,9 +14,8 @@ export default class MessageController {
 
         const message = await MessageCollection.create({ chatId, senderId, sentAt, content });
 
-        if (!message) {
-           // return ApiResponse.error(res, "Error sending message", 400);
-        }
+        await message.save();
+       
 
         //return ApiResponse.success(res, "Message sent", message);
     }
