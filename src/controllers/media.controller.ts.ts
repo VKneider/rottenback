@@ -58,18 +58,28 @@ export default class MediaController {
                 title = MediaData.original_name;
             }
 
+            let release;
+            if(mediaType === "movie"){
+                release = MediaData.release_date}
+            else{
+                release = MediaData.first_air_date;
+            }
 
             const newMedia = new MediaCollection({
                 title: title,
                 MediaId: MediaData.id,
                 description: MediaData.overview,
                 duration: MediaData.runtime,
-                releaseDate: MediaData.release_date,
+                releaseDate: release,
                 genres: genres,
                 posterUrl: MediaData.poster_path,
                 trailerUrl: MediaData.poster_path,
                 isAdult: MediaData.adult,
            });
+
+              await newMedia.save();
+
+
 
             return ApiResponse.success(res, "Media found", {
                 Media: newMedia,
@@ -79,7 +89,15 @@ export default class MediaController {
          
         }
 
-        const requestSimilar = await fetchHandler.request("GET", `/Media/${mediaId}/similar`, undefined, `append_to_response=videos,images,similar`);
+        let similarEndpoint;
+
+        if(mediaType === "movie"){
+            similarEndpoint=`/movie/${mediaId}/similar`}
+        else{
+            similarEndpoint=`/tv/${mediaId}/similar`
+        }
+
+        const requestSimilar = await fetchHandler.request("GET", similarEndpoint, undefined, `append_to_response=videos,images,similar`);
 
         if (!requestSimilar.success) {
             return ApiResponse.error(res, "Error searching similar Medias", 500);
@@ -131,6 +149,30 @@ export default class MediaController {
         }
 
         let request = await fetchHandler.request("GET", endpoint, undefined, `page=${page}&sort_by=popularity.${popularity}&with_genres=${genres}`);
+
+        if (!request.success) {
+            return ApiResponse.error(res, "Error searching Media", 500);
+        }
+
+        return ApiResponse.success(res, "Medias found", request);
+    }
+
+    static trendingMedias = async (req: Request, res: Response) => {
+        let { page, popularity, genres } = req.query as any;
+
+        let {time} = req.params;
+
+        if(!time){time="day"}
+
+        const {mediaType} = req.query as any;
+        let endpoint;
+        if(mediaType === "movie"){
+            endpoint=`/trending/movie/${time}`}
+        else{
+            endpoint=`/trending/tv/${time}`
+        }
+
+        let request = await fetchHandler.request("GET", endpoint, undefined, ``);
 
         if (!request.success) {
             return ApiResponse.error(res, "Error searching Media", 500);
@@ -196,6 +238,7 @@ interface MediaApi {
         page: number;
     };
     original_name?: string;
+    first_air_date?: string;
     }
   
 
