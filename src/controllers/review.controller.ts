@@ -29,15 +29,20 @@ export default class ReviewController {
 
 
     static createReview = async (req: any, res: any) => {
-        const { userId, mediaId, content, rating } = req.body;
-
-        const review = await ReviewCollection.create({ userId, mediaId, content, rating });
-
-        if (!review) {
-            return ApiResponse.error(res, "Error creating review", 500);
+        
+        try {
+                const { userId, mediaId, content, rating } = req.body;
+                const review = await ReviewCollection.create({ userId, mediaId, content, rating });
+    
+            if (!review) {
+                return ApiResponse.error(res, "Error creating review", 500);
+            }
+    
+            return ApiResponse.success(res, "Review created", review);
+        } catch (error:any) {
+            console.log(error)
         }
-
-        return ApiResponse.success(res, "Review created", review);
+        
     }
 
 
