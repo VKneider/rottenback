@@ -36,7 +36,7 @@ export default class chatController {
 
         }
 
-        const messages = await MessageCollection.find({ chatId: chatFlag._id }).sort({ createdAt: -1 }).populate("senderId");
+        const messages = await MessageCollection.find({ chatId: chatFlag._id }).populate("senderId").sort({ createdAt: -1 })
 
         if (!messages) {
             return ApiResponse.success(res, "Chat found with no messages", {

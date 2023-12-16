@@ -2,7 +2,7 @@ import { model, Schema, Document, Types  } from "mongoose";
 
 export interface IMessage extends Document {
     chatId: Types.ObjectId;
-    senderId: string;
+    senderId: Types.ObjectId;
     sentAt: Date;
     content : string;
 }
@@ -14,7 +14,8 @@ const messageSchema = new Schema<IMessage>({
         required: true,
     },
     senderId: {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: "User",
         required: true,
     },
     sentAt: {
