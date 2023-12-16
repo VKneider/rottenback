@@ -35,6 +35,7 @@ io.on("connection", (socket:any) => {
     });
 
     socket.on("sendMessage", async (data:any) => {
+        console.log("me llega esto del mensaje", data);
         await MessageController.sendMessage(data, null);
         socket.broadcast.to(data.chatId).emit("receiveMessage", data);
 
