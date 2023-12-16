@@ -94,7 +94,8 @@ export default class MediaController {
                 Media: newMedia,
                 similar: MediaData.similar,
                 reviews: [],
-                myReview: null
+                myReview: null,
+                popularity: 0
             });
         }
 
@@ -118,12 +119,33 @@ export default class MediaController {
         const reviews = await ReviewCollection.find({ mediaId: mediaId }).populate("userId")
         const userIdReview = reviews.find((review: any) => review.userId._id == userId);
 
+        let goodReviews = 0;
+        let badReviews = 0;
+        let popularity = 0;
+
+        if(reviews){
+
+            reviews.forEach((review: any) => {
+                if(review.rating >=3){
+                    goodReviews++;
+                }else{
+                    badReviews++;
+                }
+            });
+            
+        }
+
+        popularity = goodReviews/(goodReviews+badReviews);
+
+        
+
 
         return ApiResponse.success(res, "Media found", {
             Media,
             similar: similarMedias,
             reviews: reviews || [],
-            myReview : userIdReview || null
+            myReview : userIdReview || null,
+            popularity: popularity 
         });
     };
 
