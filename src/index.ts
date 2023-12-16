@@ -2,8 +2,6 @@ import app from "./app.js";
 import mongoose, { mongo } from "mongoose";
 import { Server } from "socket.io";
 import MessageController from "./controllers/message.controller.js";
-import { createServer } from "http";
-
 
 const connectDB = async () => {
     try {
@@ -19,16 +17,14 @@ connectDB().then(() => {
     console.log("Mongodb connected");
 });
 
-const httpServer = createServer(app);
-
-let io = new Server(httpServer, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-  transports: ["websocket", "polling"],
+let server = app.listen(app.get("port"));
+let io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    },
+    transports: ["websocket", "polling"]
 });
-
 
 io.on("connection", (socket:any) => {
     
