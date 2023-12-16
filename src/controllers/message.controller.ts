@@ -8,7 +8,7 @@ export default class MessageController {
 
     static sendMessage = async (req: any, res: any) => {
         
-        let { senderId, sentAt, chatId, content } = req.body;
+        let { senderId, sentAt, chatId, content } = req
 
         content.trim();
 
