@@ -31,8 +31,6 @@ io.on("connection", (socket:any) => {
     
     socket.on("joinRoom", (data:any) => {
         socket.join(data.chatId);
-        //send a message to the user who joined the room
-        socket.emit("receiveMessage", {message:"You joined the room"}); 
     });
 
     socket.on("sendMessage", async (data:any) => {
@@ -40,7 +38,7 @@ io.on("connection", (socket:any) => {
         await MessageController.sendMessage(data, null);
         const user = await userCollection.findById(data.senderId);
         data.senderId = user;
-        socket.to(data.chatId).emit("receiveMessage", data);
+        socket.in(data.chatId).emit("receiveMessage", data);
 
     });
 
