@@ -92,7 +92,9 @@ export default class MediaController {
 
             return ApiResponse.success(res, "Media found", {
                 Media: newMedia,
-                similar: MediaData.similar
+                similar: MediaData.similar,
+                reviews: [],
+                myReview: null
             });
         }
 
