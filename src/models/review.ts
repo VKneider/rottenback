@@ -1,8 +1,9 @@
 import { model, Schema, Document, Types  } from "mongoose";
+import { number } from "yup";
 
 export interface IReview extends Document {
     userId: Types.ObjectId;
-    mediaId: Types.ObjectId;
+    mediaId: number;
     rating: number;
     content : string;
 
@@ -15,8 +16,7 @@ const reviewSchema = new Schema<IReview>({
         required: true,
     },
     mediaId: {
-        type: Schema.Types.ObjectId,
-        ref: "Movie",
+        type: Number,
         required: true,
     },
     rating: {

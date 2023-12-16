@@ -2,47 +2,49 @@ import ApiResponse from "../utils/ApiResponse.js";
 import { Request, Response } from "express";
 import MediaCollection from "../models/media.js";
 import fetchHandler from "../utils/FetchHandler.js";
+import ReviewCollection from "../models/review.js";
 
 export default class MediaController {
-
     static searchMedia = async (req: Request, res: Response) => {
+
         const { query } = req.params;
         let { page } = req.query as any;
 
-        if (!page){page= 1}
+        if (!page) {
+            page = 1;
+        }
 
-        const {mediaType} = req.query as any;
+        const { mediaType } = req.query as any;
         let endpoint;
-        if(mediaType === "movie"){
-            endpoint=`"/search/movie"`}
-        else{
-            endpoint=`"/search/tv"`
+        if (mediaType === "movie") {
+            endpoint = `"/search/movie"`;
+        } else {
+            endpoint = `"/search/tv"`;
         }
 
         const request = await fetchHandler.request("GET", endpoint, undefined, `query=${query}&page=${page}`);
 
         if (!request.success) {
             return ApiResponse.error(res, "Error searching Media", 500);
-        }        
+        }
 
         return ApiResponse.success(res, "Medias found", request);
-    }
-
+    };
 
     static getMedia = async (req: Request, res: Response) => {
         const { mediaId } = req.params;
-        const Media = await MediaCollection.findOne({ MediaId:mediaId });
-        const {mediaType} = req.query as any;
-
-        let endpoint;
-        if(mediaType === "movie"){
-            endpoint=`/movie/${mediaId}`}
-        else{
-            endpoint=`/tv/${mediaId}`
-        }
-
+        const Media = await MediaCollection.findOne({ MediaId: mediaId });
+        const { mediaType, userId } = req.query as any;
+        
+        console.log(req.user)
 
         if (!Media) {
+            let endpoint;
+            if (mediaType === "movie") {
+                endpoint = `/movie/${mediaId}`;
+            } else {
+                endpoint = `/tv/${mediaId}`;
+            }
             const request = await fetchHandler.request("GET", endpoint, undefined, `append_to_response=videos,images,similar`);
 
             if (!request.success) {
@@ -50,30 +52,29 @@ export default class MediaController {
             }
 
             let MediaData = request.fetchData as MediaApi;
-            const genres =MediaData.genres.map((genre: any) => genre.id);
-            
-            let title ;
-            if(mediaType === "movie"){
-                title = MediaData.title}
-            else{
+            const genres = MediaData.genres.map((genre: any) => genre.id);
+
+            let title;
+            if (mediaType === "movie") {
+                title = MediaData.title;
+            } else {
                 title = MediaData.original_name;
             }
 
             let release;
-            if(mediaType === "movie"){
-                release = MediaData.release_date}
-            else{
+            if (mediaType === "movie") {
+                release = MediaData.release_date;
+            } else {
                 release = MediaData.first_air_date;
             }
 
             let trailerUrl = MediaData.videos?.results.find((video: any) => video.type === "Trailer" && video.site === "YouTube")?.key;
-            
+
             if (!trailerUrl) {
                 trailerUrl = MediaData.videos?.results.find((video: any) => video.site === "YouTube")?.key;
             }
-            
 
-            trailerUrl = `https://www.youtube.com/watch?v=${trailerUrl}`
+            trailerUrl = `https://www.youtube.com/watch?v=${trailerUrl}`;
 
             const newMedia = new MediaCollection({
                 title: title,
@@ -84,27 +85,24 @@ export default class MediaController {
                 genres: genres,
                 posterUrl: MediaData.poster_path,
                 trailerUrl: trailerUrl,
-                isAdult: MediaData.adult,
-           });
+                isAdult: MediaData.adult
+            });
 
-              await newMedia.save();
-
-
+            await newMedia.save();
 
             return ApiResponse.success(res, "Media found", {
                 Media: newMedia,
-                similar: MediaData.similar,           
-            } );
-
-         
+                similar: MediaData.similar
+            });
         }
 
+        //si existe en la base de datos
         let similarEndpoint;
 
-        if(mediaType === "movie"){
-            similarEndpoint=`/movie/${mediaId}/similar`}
-        else{
-            similarEndpoint=`/tv/${mediaId}/similar`
+        if (mediaType === "movie") {
+            similarEndpoint = `/movie/${mediaId}/similar`;
+        } else {
+            similarEndpoint = `/tv/${mediaId}/similar`;
         }
 
         const requestSimilar = await fetchHandler.request("GET", similarEndpoint, undefined, `append_to_response=videos,images,similar`);
@@ -115,23 +113,28 @@ export default class MediaController {
 
         let similarMedias = requestSimilar.fetchData as similar;
 
+        const reviews = await ReviewCollection.find({ mediaId: mediaId }).populate("userId")
+        const userIdReview = reviews.find((review: any) => review.userId._id == userId);
+
+
         return ApiResponse.success(res, "Media found", {
             Media,
-            similar:similarMedias  
+            similar: similarMedias,
+            reviews: reviews || [],
+            myReview : userIdReview || null
         });
-    }
-
+    };
 
     static getSimilarMedias = async (req: Request, res: Response) => {
         const { mediaId } = req.params;
 
-        const {mediaType} = req.query as any;
+        const { mediaType } = req.query as any;
         let endpoint;
 
-        if(mediaType === "movie"){
-            endpoint=`/movie/${mediaId}/similar`}
-        else{
-            endpoint=`/tv/${mediaId}/similar`
+        if (mediaType === "movie") {
+            endpoint = `/movie/${mediaId}/similar`;
+        } else {
+            endpoint = `/tv/${mediaId}/similar`;
         }
 
         const request = await fetchHandler.request("GET", endpoint);
@@ -141,21 +144,27 @@ export default class MediaController {
         }
 
         return ApiResponse.success(res, "Medias found", request);
-    }
-    
+    };
+
     static discoverMedias = async (req: Request, res: Response) => {
         let { page, popularity, genres } = req.query as any;
 
-        if (!page){page= 1}
-        if (!popularity){popularity= "desc"}
-        if (!genres){genres= ""}
+        if (!page) {
+            page = 1;
+        }
+        if (!popularity) {
+            popularity = "desc";
+        }
+        if (!genres) {
+            genres = "";
+        }
 
-        const {mediaType} = req.query as any;
+        const { mediaType } = req.query as any;
         let endpoint;
-        if(mediaType === "movie"){
-            endpoint=`/discover/movie`}
-        else{
-            endpoint=`/discover/tv`
+        if (mediaType === "movie") {
+            endpoint = `/discover/movie`;
+        } else {
+            endpoint = `/discover/tv`;
         }
 
         let request = await fetchHandler.request("GET", endpoint, undefined, `page=${page}&sort_by=popularity.${popularity}&with_genres=${genres}`);
@@ -165,21 +174,23 @@ export default class MediaController {
         }
 
         return ApiResponse.success(res, "Medias found", request);
-    }
+    };
 
     static trendingMedias = async (req: Request, res: Response) => {
         let { page, popularity, genres } = req.query as any;
 
-        let {time} = req.params;
+        let { time } = req.params;
 
-        if(!time){time="day"}
+        if (!time) {
+            time = "day";
+        }
 
-        const {mediaType} = req.query as any;
+        const { mediaType } = req.query as any;
         let endpoint;
-        if(mediaType === "movie"){
-            endpoint=`/trending/movie/${time}`}
-        else{
-            endpoint=`/trending/tv/${time}`
+        if (mediaType === "movie") {
+            endpoint = `/trending/movie/${time}`;
+        } else {
+            endpoint = `/trending/tv/${time}`;
         }
 
         let request = await fetchHandler.request("GET", endpoint, undefined, ``);
@@ -187,14 +198,12 @@ export default class MediaController {
         if (!request.success) {
             return ApiResponse.error(res, "Error searching Media", 500);
         }
-        
+
         return ApiResponse.success(res, "Medias found", request);
-    }
-
-
+    };
 }
 
-interface similar{
+interface similar {
     results: any[];
     page: number;
 }
@@ -202,11 +211,11 @@ interface similar{
 interface MediaApi {
     adult?: boolean;
     backdrop_path?: string;
-    belongs_to_collection?: null | { };
+    belongs_to_collection?: null | {};
     budget?: number;
     genres: {
-      id: number;
-      name: string;
+        id: number;
+        name: string;
     }[];
     homepage?: string;
     id?: number;
@@ -217,22 +226,22 @@ interface MediaApi {
     popularity?: number;
     poster_path?: string;
     production_companies?: {
-      id: number;
-      logo_path: string;
-      name: string;
-      origin_country: string;
+        id: number;
+        logo_path: string;
+        name: string;
+        origin_country: string;
     }[];
     production_countries?: {
-      iso_3166_1: string;
-      name: string;
+        iso_3166_1: string;
+        name: string;
     }[];
     release_date?: string;
     revenue?: number;
     runtime?: number;
     spoken_languages?: {
-      english_name: string;
-      iso_639_1: string;
-      name: string;
+        english_name: string;
+        iso_639_1: string;
+        name: string;
     }[];
     status?: string;
     tagline?: string;
@@ -241,14 +250,12 @@ interface MediaApi {
     vote_average?: number;
     vote_count?: number;
     videos?: {
-      results: any[]; // Puedes definir un tipo más específico si es necesario
+        results: any[]; // Puedes definir un tipo más específico si es necesario
     };
-    similar:{
+    similar: {
         results: any[];
         page: number;
     };
     original_name?: string;
     first_air_date?: string;
-    }
-  
-
+}
