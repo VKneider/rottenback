@@ -39,7 +39,7 @@ io.on("connection", (socket:any) => {
         console.log("me llega esto del mensaje", data);
         await MessageController.sendMessage(data, null);
         const user = await userCollection.findById(data.senderId);
-        data.sender = user;
+        data.senderId = user;
         socket.to(data.chatId).emit("receiveMessage", data);
 
     });
