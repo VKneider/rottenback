@@ -132,7 +132,7 @@ export default class MediaController {
                     badReviews++;
                 }
             });
-            
+
         }
 
         popularity = goodReviews/(goodReviews+badReviews);
@@ -182,6 +182,8 @@ export default class MediaController {
         if (!genres) {
             genres = "";
         }
+
+        
 
         const { mediaType } = req.query as any;
         let endpoint;

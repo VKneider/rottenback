@@ -1,21 +1,30 @@
 import ApiResponse from "../utils/ApiResponse.js";
 import { Request, Response } from "express";
-import ChatCollection from "../models/chat";
+import ChatCollection from "../models/chat.js";
 import fetchHandler from "../utils/FetchHandler.js";
-import MessageCollection from "../models/message";
+import MessageCollection from "../models/message.js";
 
 export default class chatController {
 
     //post for easier coding
-    openChat = async (req: any, res: any) => {
-        const { isGroup, members, chatId } = req.body;
+    static openChat = async (req: any, res: any) => {
+        let { isGroup, members, chatId, description } = req.body;
 
         
-        const chatFlag = await ChatCollection.findOne({ members: { $all: members } });
+
+        let chatFlag;
+
+        if(chatId){
+            chatFlag = await ChatCollection.findById(chatId);
+        }else {
+            chatFlag = await ChatCollection.findOne({ members: { $all: members } });
+        }
 
         if (!chatFlag) {
             
-            const newChat = await ChatCollection.create({ isGroup, members });
+            const newChat = await ChatCollection.create({ isGroup, members, description });
+            await newChat.save();
+
             if (!newChat) {
                 return ApiResponse.error(res, "Error creating chat", 400);
             }
@@ -44,7 +53,7 @@ export default class chatController {
         }
 
 
-    deleteChat = async (req: any, res: any) => {
+    static deleteChat = async (req: any, res: any) => {
         const { chatId } = req.params;
         const chat = await ChatCollection.findByIdAndDelete(chatId);
 

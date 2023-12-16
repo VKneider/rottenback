@@ -9,6 +9,7 @@ import userRouter from './routes/user.routes.js';
 import authRouter from './routes/auth.routes.js';
 import MediaRouter from './routes/media.routes..js';
 import ReviewRouter from './routes/review.routes.js';
+import ChatRouter from './routes/chat.routes.js';
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use('/auth', authRouter)
 app.use('/user', userRouter)
 app.use('/media', MediaRouter)
 app.use('/review', ReviewRouter)
+app.use('/chat', ChatRouter)
 
 
 export default app;
